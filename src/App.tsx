@@ -1,6 +1,7 @@
+import { useCallback, useState } from "react";
+
 import { Canvas } from "./components";
 import "./App.css";
-import { useCallback, useState } from "react";
 
 const App = () => {
     const [stopped, setStopped] = useState(false);
@@ -15,7 +16,7 @@ const App = () => {
     return (
         <>
             <button onClick={() => setStopped(!stopped)}>Stop</button>
-            <Canvas update={update} stop={stopped} width="150" height="150" />
+            <Canvas update={update} stop={stopped} />
         </>
     );
 };
