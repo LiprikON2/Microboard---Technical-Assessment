@@ -6,6 +6,7 @@ export interface CanvasOptions {
     stop?: boolean;
     preUpdate?: UpdateFn;
     postUpdate?: UpdateFn;
+    dispose?: () => void;
 }
 
 const resizeCanvas = (canvas: HTMLCanvasElement) => {
@@ -24,6 +25,7 @@ const resizeCanvas = (canvas: HTMLCanvasElement) => {
 
     return false;
 };
+export type InitFn = (canvas: HTMLCanvasElement) => void;
 
 export type UpdateFn = (
     ctx: CanvasRenderingContext2D,
@@ -37,13 +39,14 @@ export type UpdateFn = (
     - https://medium.com/@pdx.lucasm/canvas-with-react-js-32e133c05258
     - https://stackoverflow.com/a/19772220
  */
-export const useCanvas = (update: UpdateFn, options: CanvasOptions) => {
+export const useCanvas = (init: InitFn, update: UpdateFn, options: CanvasOptions) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
 
     useEffect(() => {
         const canvas = canvasRef.current;
         const context = canvas!.getContext("2d") as CanvasRenderingContext2D;
 
+        init(canvas!);
         let frameCount = 0;
         let animationFrameId: number;
 
@@ -59,7 +62,7 @@ export const useCanvas = (update: UpdateFn, options: CanvasOptions) => {
             const canvasSize = { height: canvas!.height / ratio, width: canvas!.width / ratio };
 
             frameCount++;
-            if (options.stop) return;
+            if (options.stop) return options.dispose?.();
 
             if (!Number.isNaN(delta)) {
                 options.preUpdate?.(context, time, delta, canvasSize);
@@ -70,8 +73,11 @@ export const useCanvas = (update: UpdateFn, options: CanvasOptions) => {
         };
         window.requestAnimationFrame(render);
 
-        return () => window.cancelAnimationFrame(animationFrameId);
-    }, [update, options]);
+        return () => {
+            window.cancelAnimationFrame(animationFrameId);
+            options.dispose?.();
+        };
+    }, [update, options, init]);
 
     const { height, width } = useViewportSize();
 

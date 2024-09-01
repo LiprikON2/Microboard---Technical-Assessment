@@ -1,3 +1,4 @@
+import { dir } from "console";
 import { clamp } from "./helpers";
 
 export interface CircleOptions {
@@ -20,11 +21,11 @@ export interface CircleOptions {
 export class Circle {
     x: number;
     y: number;
-    protected speed: number;
-    protected direction: number;
-    protected radius: number;
-    protected color: string;
-    protected bounce: boolean;
+    radius: number;
+    speed: number;
+    direction: number;
+    color: string;
+    bounce: boolean;
     visible: boolean;
 
     constructor({
@@ -61,6 +62,11 @@ export class Circle {
         return this;
     }
 
+    setDirection(direction: number) {
+        this.direction = direction;
+        return this;
+    }
+
     /**
      *
      * @param ctx Canvas context
@@ -81,20 +87,10 @@ export class Circle {
         ctx.fillStyle = this.color;
         ctx.beginPath();
 
-        // ctx.arc(
-        //     canvasSize.width * Math.sin(time * this.speedX * 0.001) ** 2,
-        //     canvasSize.height * Math.sin(time * this.speedY * 0.01) ** 2,
-        //     (this.radius + this.radius * 0.2 * Math.sin(time * 0.001) ** 2) *
-        //         canvasSize.height *
-        //         0.01,
-        //     0,
-        //     2 * Math.PI
-        // );
-
         ctx.arc(
             canvasSize.width * this.x * 0.01,
             canvasSize.height * this.y * 0.01,
-            this.radius * canvasSize.height * 0.01,
+            this.radius * canvasSize.height * canvasSize.width * 0.000008,
             0,
             2 * Math.PI
         );

@@ -10,3 +10,10 @@ export const isPointInCircle = (
 
     return (x - circleX) ** 2 + (y - circleY) ** 2 <= radius ** 2;
 };
+
+export const getRelativeCoordinates = (event: MouseEvent, element: HTMLCanvasElement) => {
+    const rect = element.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+    return { x, y };
+};

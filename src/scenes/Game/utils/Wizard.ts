@@ -27,6 +27,7 @@ export class Wizard extends Circle {
             shootingSpeed = 10,
             shootingDirection = 0,
             projectileSpeed = 40,
+            // TODO make an option
             projectileLimit = 50,
         } = options;
 
@@ -49,6 +50,8 @@ export class Wizard extends Circle {
             speed: this.projectileSpeed,
             color: "red",
             radius: this.radius * 0.2,
+            // TODO make an option
+            bounce: false,
         });
         this.projectiles.push(projectile);
     }
