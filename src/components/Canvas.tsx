@@ -1,13 +1,13 @@
-import { useCanvas } from "./hooks";
+import { CanvasOptions, UpdateFn, useCanvas } from "./hooks";
 import classes from "./Canvas.module.css";
 
 type CanvasProps = {
-    update: (ctx: CanvasRenderingContext2D, time: number, delta: number) => void;
-    stop?: boolean;
+    update: UpdateFn;
+    options: CanvasOptions;
 } & React.HTMLProps<HTMLCanvasElement>;
 
-export const Canvas = ({ update, stop = false, ...rest }: CanvasProps) => {
-    const canvasRef = useCanvas(update, stop);
+export const Canvas = ({ update, options, ...rest }: CanvasProps) => {
+    const canvasRef = useCanvas(update, options);
 
     return (
         <>

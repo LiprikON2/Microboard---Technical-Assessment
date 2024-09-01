@@ -1,5 +1,12 @@
 import { useRef, useEffect } from "react";
+
 import { useViewportSize } from "~/hooks/useViewportSize";
+
+export interface CanvasOptions {
+    stop?: boolean;
+    preUpdate?: UpdateFn;
+    postUpdate?: UpdateFn;
+}
 
 const resizeCanvas = (canvas: HTMLCanvasElement) => {
     const { height, width } = canvas.getBoundingClientRect();
@@ -18,22 +25,20 @@ const resizeCanvas = (canvas: HTMLCanvasElement) => {
     return false;
 };
 
+export type UpdateFn = (
+    ctx: CanvasRenderingContext2D,
+    time: number,
+    delta: number,
+    canvasSize: { width: number; height: number }
+) => void;
+
 /* 
     ref:
     - https://medium.com/@pdx.lucasm/canvas-with-react-js-32e133c05258
     - https://stackoverflow.com/a/19772220
  */
-export const useCanvas = (
-    update: (ctx: CanvasRenderingContext2D, time: number, delta: number) => void,
-    stop?: boolean
-) => {
+export const useCanvas = (update: UpdateFn, options: CanvasOptions) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
-    const { height, width } = useViewportSize();
-
-    useEffect(() => {
-        const canvas = canvasRef.current;
-        resizeCanvas(canvas!);
-    }, [height, width]);
 
     useEffect(() => {
         const canvas = canvasRef.current;
@@ -51,16 +56,32 @@ export const useCanvas = (
             const fps = 1000 / delta;
 
             frameCount++;
-            if (stop) return;
+            if (options.stop) return;
 
-            if (!Number.isNaN(delta)) update(context, time, delta);
-            else console.log("skipping update");
+            if (!Number.isNaN(delta)) {
+                options.preUpdate?.(context, time, delta, {
+                    height: canvas!.height,
+                    width: canvas!.width,
+                });
+                update(context, time, delta, { height: canvas!.height, width: canvas!.width });
+                options.postUpdate?.(context, time, delta, {
+                    height: canvas!.height,
+                    width: canvas!.width,
+                });
+            }
             animationFrameId = window.requestAnimationFrame(render);
         };
         window.requestAnimationFrame(render);
 
         return () => window.cancelAnimationFrame(animationFrameId);
-    }, [stop, update]);
+    }, [update, options]);
+
+    const { height, width } = useViewportSize();
+
+    useEffect(() => {
+        const canvas = canvasRef.current;
+        resizeCanvas(canvas!);
+    }, [height, width]);
 
     return canvasRef;
 };
