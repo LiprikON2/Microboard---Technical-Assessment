@@ -17,13 +17,13 @@ export interface CircleOptions {
 const clamp = (number: number, min: number, max: number) => Math.max(min, Math.min(number, max));
 
 export class Circle {
-    private x: number;
-    private y: number;
-    private speed: number;
-    private direction: number;
-    private radius: number;
-    private color: string;
-    private bounce: boolean;
+    protected x: number;
+    protected y: number;
+    protected speed: number;
+    protected direction: number;
+    protected radius: number;
+    protected color: string;
+    protected bounce: boolean;
 
     constructor({
         x = 0,
@@ -92,24 +92,31 @@ export class Circle {
     }
 
     update(time: number, delta: number, canvasSize: { width: number; height: number }) {
+        let x = this.x + this.speedX * delta;
+        let y = this.y + this.speedY * delta;
+
+        if (!this.bounce) {
+            this.x = x;
+            this.y = y;
+            return;
+        }
+
         const minX = (this.radius * canvasSize.height) / canvasSize.width;
         const maxX = 100 - minX;
-        const x = clamp(this.x + this.speedX * delta, minX, maxX);
+        x = clamp(x, minX, maxX);
 
         const minY = this.radius;
         const maxY = 100 - minY;
-        const y = clamp(this.y + this.speedY * delta, minY, maxY);
+        y = clamp(y, minY, maxY);
 
-        if (this.bounce) {
-            if (x <= minX || x >= maxX) {
-                // Reverse direction horizontally
-                this.direction = Math.PI - this.direction;
-            }
+        if (x <= minX || x >= maxX) {
+            // Reverse direction horizontally
+            this.direction = Math.PI - this.direction;
+        }
 
-            if (y <= minY || y >= maxY) {
-                // Reverse direction vertically
-                this.direction = -this.direction;
-            }
+        if (y <= minY || y >= maxY) {
+            // Reverse direction vertically
+            this.direction = -this.direction;
         }
 
         this.x = x;

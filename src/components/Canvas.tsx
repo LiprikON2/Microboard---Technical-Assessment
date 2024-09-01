@@ -9,9 +9,5 @@ type CanvasProps = {
 export const Canvas = ({ update, options, ...rest }: CanvasProps) => {
     const canvasRef = useCanvas(update, options);
 
-    return (
-        <>
-            <canvas className={classes.canvas} ref={canvasRef} {...rest}></canvas>
-        </>
-    );
+    return <canvas className={classes.canvas} ref={canvasRef} {...rest} />;
 };

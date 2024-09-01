@@ -55,19 +55,16 @@ export const useCanvas = (update: UpdateFn, options: CanvasOptions) => {
             const delta = time / frameCount;
             const fps = 1000 / delta;
 
+            const { devicePixelRatio: ratio = 1 } = window;
+            const canvasSize = { height: canvas!.height / ratio, width: canvas!.width / ratio };
+
             frameCount++;
             if (options.stop) return;
 
             if (!Number.isNaN(delta)) {
-                options.preUpdate?.(context, time, delta, {
-                    height: canvas!.height,
-                    width: canvas!.width,
-                });
-                update(context, time, delta, { height: canvas!.height, width: canvas!.width });
-                options.postUpdate?.(context, time, delta, {
-                    height: canvas!.height,
-                    width: canvas!.width,
-                });
+                options.preUpdate?.(context, time, delta, canvasSize);
+                update(context, time, delta, canvasSize);
+                options.postUpdate?.(context, time, delta, canvasSize);
             }
             animationFrameId = window.requestAnimationFrame(render);
         };
