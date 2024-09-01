@@ -1,5 +1,6 @@
 import { Circle, CircleOptions } from "./Cicle";
 import { ProjectileBuffer } from "./ProjectileBuffer";
+import { isPointInCircle } from "./helpers";
 
 export type WizardOptions = Omit<CircleOptions, "bounce"> & {
     shootingSpeed?: number;
@@ -11,12 +12,13 @@ export type WizardOptions = Omit<CircleOptions, "bounce"> & {
 
 export class Wizard extends Circle {
     private shootingIntervalId: NodeJS.Timeout | null = null;
-    private projectiles: ProjectileBuffer;
+    private projectiles: ProjectileBuffer<Circle>;
     private lastShotTime: number = -Infinity;
 
     private shootingSpeed: number;
     private shootingDirection: number;
     private projectileSpeed: number;
+    private enemies: Wizard[] = [];
 
     constructor(options: WizardOptions) {
         super({ ...options, bounce: true });
@@ -27,10 +29,16 @@ export class Wizard extends Circle {
             projectileSpeed = 40,
             projectileLimit = 50,
         } = options;
+
         this.shootingSpeed = shootingSpeed;
         this.shootingDirection = shootingDirection;
         this.projectileSpeed = projectileSpeed;
         this.projectiles = new ProjectileBuffer(projectileLimit);
+    }
+
+    addEnemy(enemy: Wizard) {
+        this.enemies.push(enemy);
+        return this;
     }
 
     shoot() {
@@ -61,8 +69,20 @@ export class Wizard extends Circle {
         delta: number,
         canvasSize: { width: number; height: number }
     ) {
-        super.draw(ctx, time, delta, canvasSize);
+        this.projectiles.forEach((projectile) => {
+            this.enemies.forEach((enemy) => {
+                if (
+                    isPointInCircle(
+                        { x: projectile.x, y: projectile.y },
+                        { x: enemy.x, y: enemy.y, r: enemy.radius }
+                    )
+                ) {
+                    projectile.setVisible(false);
+                }
+            });
 
-        this.projectiles.forEach((projectile) => projectile.draw(ctx, time, delta, canvasSize));
+            projectile.draw(ctx, time, delta, canvasSize);
+        });
+        super.draw(ctx, time, delta, canvasSize);
     }
 }

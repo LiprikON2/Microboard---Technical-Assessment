@@ -1,8 +1,8 @@
-export class ProjectileBuffer {
+export class ProjectileBuffer<T> {
     /**
      * Last bufferLength number of elements
      */
-    private buffer: any[] = [];
+    private buffer: T[] = [];
     /**
      * Value between 0 and bufferLength
      */
@@ -16,7 +16,7 @@ export class ProjectileBuffer {
         this.bufferLength = bufferLength;
     }
 
-    push(element: any) {
+    push(element: T) {
         if (this.buffer.length === this.bufferLength) {
             this.buffer[this.pointer] = element;
         } else {
@@ -29,7 +29,7 @@ export class ProjectileBuffer {
         return this.buffer[i];
     }
 
-    forEach(callback: (...args: any[]) => void) {
+    forEach(callback: (item: T, index: number) => void) {
         return this.buffer.forEach(callback);
     }
     get length() {

@@ -1,3 +1,5 @@
+import { clamp } from "./helpers";
+
 export interface CircleOptions {
     /** Initial horizontal position of the center of the circle in percentage of the canvas width */
     x?: number;
@@ -12,18 +14,18 @@ export interface CircleOptions {
     direction?: number;
     color?: string;
     bounce?: boolean;
+    visible?: boolean;
 }
 
-const clamp = (number: number, min: number, max: number) => Math.max(min, Math.min(number, max));
-
 export class Circle {
-    protected x: number;
-    protected y: number;
+    x: number;
+    y: number;
     protected speed: number;
     protected direction: number;
     protected radius: number;
     protected color: string;
     protected bounce: boolean;
+    visible: boolean;
 
     constructor({
         x = 0,
@@ -33,6 +35,7 @@ export class Circle {
         radius = 5,
         color = "pink",
         bounce = false,
+        visible = true,
     }: CircleOptions) {
         this.x = x;
         this.y = y;
@@ -41,6 +44,7 @@ export class Circle {
         this.radius = radius;
         this.color = color;
         this.bounce = bounce;
+        this.visible = visible;
     }
 
     get speedX() {
@@ -50,6 +54,11 @@ export class Circle {
     get speedY() {
         const speedY = this.speed * Math.sin(this.direction) * 0.001;
         return speedY;
+    }
+
+    setVisible(visible: boolean) {
+        this.visible = visible;
+        return this;
     }
 
     /**
@@ -67,6 +76,8 @@ export class Circle {
         canvasSize: { width: number; height: number }
     ) {
         this.update(time, delta, canvasSize);
+        if (!this.visible) return;
+
         ctx.fillStyle = this.color;
         ctx.beginPath();
 

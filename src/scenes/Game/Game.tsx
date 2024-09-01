@@ -9,12 +9,13 @@ const preUpdate = (ctx: CanvasRenderingContext2D) => {
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 };
 
-const makeUpdate = () => {
+const makeGame = () => {
     const pinkWizard = new Wizard({
         x: 10,
         y: 10,
         speed: 25,
         direction: Math.PI / 2,
+        color: "pink",
         shootingDirection: 0,
     });
     const cyanWizard = new Wizard({
@@ -26,6 +27,9 @@ const makeUpdate = () => {
         shootingDirection: Math.PI,
     });
 
+    cyanWizard.addEnemy(pinkWizard);
+    pinkWizard.addEnemy(cyanWizard);
+
     const update = (
         ctx: CanvasRenderingContext2D,
         time: number,
@@ -36,13 +40,13 @@ const makeUpdate = () => {
         cyanWizard.draw(ctx, time, delta, canvasSize);
     };
 
-    return update;
+    return { update };
 };
 
 export const Game = () => {
     const [stopped, setStopped] = useState(false);
 
-    const update = makeUpdate();
+    const { update } = makeGame();
     return (
         <>
             <button onClick={() => setStopped(!stopped)}>Stop</button>
