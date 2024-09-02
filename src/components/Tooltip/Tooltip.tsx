@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { useElementSize, useViewportSize } from "~/hooks";
+import { useClickOutside, useElementSize, useMergedRef, useViewportSize } from "~/hooks";
 import { clamp } from "~/utils";
 import classes from "./Tooltip.module.css";
 
@@ -8,12 +8,15 @@ interface TooltipProps {
     x: number;
     y: number;
     visible?: boolean;
+    onClose?: () => void;
     children?: React.ReactNode;
 }
 
-export const Tooltip = ({ x, y, visible = false, children }: TooltipProps) => {
+export const Tooltip = ({ x, y, visible = false, onClose = () => {}, children }: TooltipProps) => {
     const { height: viewportHeight, width: viewportWidth } = useViewportSize();
-    const { ref, width } = useElementSize();
+    const { ref: sizeRef, width } = useElementSize();
+    const clickOutsideRef = useClickOutside(onClose);
+    const ref = useMergedRef(sizeRef, clickOutsideRef);
 
     const getTooltipPosStyle = (
         x: number,

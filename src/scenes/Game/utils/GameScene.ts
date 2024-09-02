@@ -1,6 +1,13 @@
 import { Wizard } from "./Wizard";
 import { getRelativeCoordinates, isPointInCircle } from "./helpers";
 
+interface WizardClickEventDetail {
+    coords: { x: number; y: number };
+}
+export interface GameEventMap extends HTMLElementEventMap {
+    wizardClick: MouseEvent & { detail: WizardClickEventDetail };
+}
+
 export class GameScene {
     private canvas: HTMLCanvasElement | null = null;
     private toDispose: (() => void)[] = [];
@@ -22,7 +29,15 @@ export class GameScene {
         const wizard = this.getClickedWizard();
         if (!wizard) return;
 
-        console.log("coords", coords);
+        const wizardClickEvent = new CustomEvent<WizardClickEventDetail>("wizardClick", {
+            bubbles: true,
+            cancelable: false,
+            composed: true,
+            detail: {
+                coords,
+            },
+        });
+        dispatchEvent(wizardClickEvent);
     };
 
     getClickedWizard() {

@@ -1,5 +1,6 @@
 import { CanvasOptions, InitFn, UpdateFn, useCanvas } from "./hooks";
 import classes from "./Canvas.module.css";
+import { memo } from "react";
 
 type CanvasProps = {
     init: InitFn;

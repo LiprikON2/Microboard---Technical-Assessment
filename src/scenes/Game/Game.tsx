@@ -1,13 +1,11 @@
-import { useState } from "react";
+import { memo, useState } from "react";
 
-import { Canvas, Tooltip } from "~/components";
+import { Canvas } from "~/components";
 import { randomId } from "~/utils";
 import { GameScene } from "./utils";
-import classes from "./Game.module.css";
 
-export const Game = () => {
+export const Game = memo(() => {
     const [stopped, setStopped] = useState(false);
-    const [visible, setVisible] = useState(true);
     const [key, setKey] = useState(randomId());
 
     const gameScene = new GameScene();
@@ -26,9 +24,6 @@ export const Game = () => {
                     stop: stopped,
                 }}
             />
-            <Tooltip x={9999} y={0} visible={visible}>
-                <button onClick={() => setKey(randomId())}>Test</button>
-            </Tooltip>
         </>
     );
-};
+});
