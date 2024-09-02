@@ -1,5 +1,5 @@
 import { dir } from "console";
-import { clamp } from "./helpers";
+import { clamp } from "~/utils";
 
 export interface CircleOptions {
     /** Initial horizontal position of the center of the circle in percentage of the canvas width */

@@ -1,6 +1,6 @@
 import { useRef, useEffect } from "react";
 
-import { useViewportSize } from "~/hooks/useViewportSize";
+import { useViewportSize } from "~/hooks";
 
 export interface CanvasOptions {
     stop?: boolean;

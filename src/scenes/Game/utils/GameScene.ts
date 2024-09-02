@@ -2,19 +2,39 @@ import { Wizard } from "./Wizard";
 import { getRelativeCoordinates, isPointInCircle } from "./helpers";
 
 export class GameScene {
-    canvas: HTMLCanvasElement | null = null;
+    private canvas: HTMLCanvasElement | null = null;
+    private toDispose: (() => void)[] = [];
     wizards: Wizard[] = [];
     mouseCoords = { x: 0, y: 0 };
 
-    toDispose: (() => void)[] = [];
-
     constructor() {}
 
-    handleMouseEvent = (e: MouseEvent) => {
+    handleMouseMove = (e: MouseEvent) => {
         const coords = getRelativeCoordinates(e, this.canvas!);
-        this.checkMouseWizardCollision(coords);
+        this.updateMouseCoords(coords);
+
         // console.log(`X: ${coords.x}, Y: ${coords.y}`);
     };
+    handleClick = (e: MouseEvent) => {
+        const coords = getRelativeCoordinates(e, this.canvas!);
+        this.updateMouseCoords(coords);
+
+        const wizard = this.getClickedWizard();
+        if (!wizard) return;
+
+        console.log("coords", coords);
+    };
+
+    getClickedWizard() {
+        // this.mouseCoords
+        for (const wizard of this.wizards) {
+            if (isPointInCircle(this.mouseCoords, { x: wizard.x, y: wizard.y, r: wizard.radius })) {
+                return wizard;
+            }
+        }
+
+        return null;
+    }
 
     init = (canvas: HTMLCanvasElement) => {
         this.canvas = canvas;
@@ -45,10 +65,12 @@ export class GameScene {
         this.wizards.push(pinkWizard);
         this.wizards.push(cyanWizard);
 
-        window.addEventListener("mousemove", this.handleMouseEvent);
+        window.addEventListener("mousemove", this.handleMouseMove);
+        window.addEventListener("click", this.handleClick);
 
-        const dispose = () => window.removeEventListener("mousemove", this.handleMouseEvent);
-        this.toDispose.push(dispose);
+        const dispose = () => window.removeEventListener("mousemove", this.handleMouseMove);
+        const dispose2 = () => window.removeEventListener("click", this.handleClick);
+        this.toDispose.push(dispose, dispose2);
     }
 
     preUpdate = (ctx: CanvasRenderingContext2D) => {
@@ -64,11 +86,6 @@ export class GameScene {
         this.wizards.forEach((wizard) => {
             if (isPointInCircle(this.mouseCoords, { x: wizard.x, y: wizard.y, r: wizard.radius })) {
                 wizard.setDirection(-wizard.direction);
-                console.log("this.mouseCoords", this.mouseCoords, {
-                    x: wizard.x,
-                    y: wizard.y,
-                    r: wizard.radius,
-                });
             }
 
             wizard.draw(ctx, time, delta, canvasSize);
@@ -81,7 +98,7 @@ export class GameScene {
         this.toDispose = [];
     };
 
-    checkMouseWizardCollision(mousePixelCoords: { x: number; y: number }) {
+    updateMouseCoords(mousePixelCoords: { x: number; y: number }) {
         const { devicePixelRatio: ratio = 1 } = window;
         const canvasSize = {
             height: this.canvas!.height / ratio,
