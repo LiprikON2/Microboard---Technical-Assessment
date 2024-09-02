@@ -1,14 +1,18 @@
+import { AppEventMap } from "~/App";
 import { Wizard } from "./Wizard";
 import { getRelativeCoordinates, isPointInCircle } from "./helpers";
 
 interface WizardClickEventDetail {
+    wizardId: string;
     coords: { x: number; y: number };
+    content: { color: string; active: boolean }[];
 }
 export interface GameEventMap extends HTMLElementEventMap {
     wizardClick: MouseEvent & { detail: WizardClickEventDetail };
 }
 
 export class GameScene {
+    readonly projectileColors = ["wheat", "red", "orange"];
     private canvas: HTMLCanvasElement | null = null;
     private toDispose: (() => void)[] = [];
     wizards: Wizard[] = [];
@@ -19,7 +23,6 @@ export class GameScene {
     handleMouseMove = (e: MouseEvent) => {
         const coords = getRelativeCoordinates(e, this.canvas!);
         this.updateMouseCoords(coords);
-
         // console.log(`X: ${coords.x}, Y: ${coords.y}`);
     };
     handleClick = (e: MouseEvent) => {
@@ -29,16 +32,41 @@ export class GameScene {
         const wizard = this.getClickedWizard();
         if (!wizard) return;
 
+        wizard.setActive(false);
+
         const wizardClickEvent = new CustomEvent<WizardClickEventDetail>("wizardClick", {
             bubbles: true,
             cancelable: false,
             composed: true,
             detail: {
+                wizardId: wizard.id,
                 coords,
+                content: this.projectileColors.map((color) => ({
+                    color,
+                    active: wizard.projectileColor === color,
+                })),
             },
         });
         dispatchEvent(wizardClickEvent);
     };
+
+    handleWizardActivation = (e: AppEventMap["wizardActivation"]) => {
+        const wizard = this.getWizardById(e.detail.wizardId);
+        if (!wizard) return;
+
+        wizard.setActive(e.detail.active);
+    };
+
+    handleWizardProjectileColorChange = (e: AppEventMap["wizardProjectileColor"]) => {
+        const wizard = this.getWizardById(e.detail.wizardId);
+        if (!wizard) return;
+
+        wizard.setProjectileColor(e.detail.color);
+    };
+
+    getWizardById(id: string | null) {
+        return this.wizards.find((wizard) => wizard.id === id) ?? null;
+    }
 
     getClickedWizard() {
         // this.mouseCoords
@@ -82,10 +110,22 @@ export class GameScene {
 
         window.addEventListener("mousemove", this.handleMouseMove);
         window.addEventListener("click", this.handleClick);
+        window.addEventListener<any>("wizardActivation", this.handleWizardActivation);
+        window.addEventListener<any>(
+            "wizardProjectileColor",
+            this.handleWizardProjectileColorChange
+        );
 
         const dispose = () => window.removeEventListener("mousemove", this.handleMouseMove);
         const dispose2 = () => window.removeEventListener("click", this.handleClick);
-        this.toDispose.push(dispose, dispose2);
+        const dispose3 = () =>
+            window.removeEventListener<any>("wizardActivation", this.handleWizardActivation);
+        const dispose4 = () =>
+            window.removeEventListener<any>(
+                "wizardProjectileColor",
+                this.handleWizardProjectileColorChange
+            );
+        this.toDispose.push(dispose, dispose2, dispose3, dispose4);
     }
 
     preUpdate = (ctx: CanvasRenderingContext2D) => {

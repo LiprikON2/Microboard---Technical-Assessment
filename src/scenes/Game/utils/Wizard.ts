@@ -8,6 +8,7 @@ export type WizardOptions = Omit<CircleOptions, "bounce"> & {
     projectileSpeed?: number;
     /** The limit of the maximum amount of projectiles spawned by this wizard */
     projectileLimit?: number;
+    projectileColor?: string;
 };
 
 export class Wizard extends Circle {
@@ -15,10 +16,11 @@ export class Wizard extends Circle {
     private projectiles: ProjectileBuffer<Circle>;
     private lastShotTime: number = -Infinity;
 
-    private shootingSpeed: number;
-    private shootingDirection: number;
-    private projectileSpeed: number;
-    private enemies: Wizard[] = [];
+    shootingSpeed: number;
+    shootingDirection: number;
+    projectileSpeed: number;
+    projectileColor: string;
+    enemies: Wizard[] = [];
 
     constructor(options: WizardOptions) {
         super({ ...options, bounce: true });
@@ -29,12 +31,19 @@ export class Wizard extends Circle {
             projectileSpeed = 40,
             // TODO make an option
             projectileLimit = 50,
+            projectileColor = "red",
         } = options;
 
         this.shootingSpeed = shootingSpeed;
         this.shootingDirection = shootingDirection;
         this.projectileSpeed = projectileSpeed;
+        this.projectileColor = projectileColor;
         this.projectiles = new ProjectileBuffer(projectileLimit);
+    }
+
+    setProjectileColor(projectileColor: string) {
+        this.projectileColor = projectileColor;
+        return this;
     }
 
     addEnemy(enemy: Wizard) {
@@ -48,7 +57,7 @@ export class Wizard extends Circle {
             y: this.y,
             direction: this.shootingDirection,
             speed: this.projectileSpeed,
-            color: "red",
+            color: this.projectileColor,
             radius: this.radius * 0.2,
             // TODO make an option
             bounce: false,

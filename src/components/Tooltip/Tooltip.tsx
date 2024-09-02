@@ -53,11 +53,12 @@ export const Tooltip = ({ x, y, visible = false, onClose = () => {}, children }:
     return (
         <div
             ref={ref}
+            className={classes.tooltip}
             style={{
                 visibility: visible ? "visible" : "hidden",
                 ...getTooltipPosStyle(x, y, viewportWidth, viewportHeight),
             }}
-            className={classes.tooltip}
+            onClick={(e) => e.stopPropagation()}
         >
             {children}
         </div>

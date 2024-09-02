@@ -1,5 +1,5 @@
 import { dir } from "console";
-import { clamp } from "~/utils";
+import { clamp, randomId } from "~/utils";
 
 export interface CircleOptions {
     /** Initial horizontal position of the center of the circle in percentage of the canvas width */
@@ -16,9 +16,11 @@ export interface CircleOptions {
     color?: string;
     bounce?: boolean;
     visible?: boolean;
+    active?: boolean;
 }
 
 export class Circle {
+    id: string;
     x: number;
     y: number;
     radius: number;
@@ -27,6 +29,7 @@ export class Circle {
     color: string;
     bounce: boolean;
     visible: boolean;
+    active: boolean;
 
     constructor({
         x = 0,
@@ -37,6 +40,7 @@ export class Circle {
         color = "pink",
         bounce = false,
         visible = true,
+        active = true,
     }: CircleOptions) {
         this.x = x;
         this.y = y;
@@ -46,6 +50,9 @@ export class Circle {
         this.color = color;
         this.bounce = bounce;
         this.visible = visible;
+        this.active = active;
+
+        this.id = randomId();
     }
 
     get speedX() {
@@ -59,6 +66,10 @@ export class Circle {
 
     setVisible(visible: boolean) {
         this.visible = visible;
+        return this;
+    }
+    setActive(active: boolean) {
+        this.active = active;
         return this;
     }
 
@@ -99,6 +110,8 @@ export class Circle {
     }
 
     update(time: number, delta: number, canvasSize: { width: number; height: number }) {
+        if (!this.active) return;
+
         let x = this.x + this.speedX * delta;
         let y = this.y + this.speedY * delta;
 
