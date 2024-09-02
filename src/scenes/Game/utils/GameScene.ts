@@ -12,13 +12,26 @@ export interface GameEventMap extends HTMLElementEventMap {
 }
 
 export class GameScene {
-    readonly projectileColors = ["wheat", "red", "orange"];
+    private _projectileColors: string[] | null = null;
     private canvas: HTMLCanvasElement | null = null;
     private toDispose: (() => void)[] = [];
     wizards: Wizard[] = [];
     mouseCoords = { x: 0, y: 0 };
 
     constructor() {}
+
+    get projectileColors() {
+        if (this._projectileColors !== null) return this._projectileColors;
+        const additionalColors = ["wheat", "orange"];
+        const colors = [
+            ...this.wizards.map((wizard) => wizard.projectileColor),
+            ...additionalColors,
+        ];
+        const uniqueColors = [...new Set(colors)];
+
+        this._projectileColors = uniqueColors;
+        return this._projectileColors;
+    }
 
     handleMouseMove = (e: MouseEvent) => {
         const coords = getRelativeCoordinates(e, this.canvas!);
@@ -69,7 +82,6 @@ export class GameScene {
     }
 
     getClickedWizard() {
-        // this.mouseCoords
         for (const wizard of this.wizards) {
             if (isPointInCircle(this.mouseCoords, { x: wizard.x, y: wizard.y, r: wizard.radius })) {
                 return wizard;
@@ -100,6 +112,7 @@ export class GameScene {
             direction: -(Math.PI / 2),
             color: "cyan",
             shootingDirection: Math.PI,
+            projectileColor: "blue",
         });
 
         cyanWizard.addEnemy(pinkWizard);
