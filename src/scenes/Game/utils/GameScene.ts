@@ -12,9 +12,20 @@ export interface WizardHitEventDetail {
     victimId: string;
 }
 
+export interface WizardControls {
+    shootingSpeed: number;
+    projectileLimit: number;
+    projectileBounce: boolean;
+    speed: number;
+}
+export type WizardControlsEventDetail = {
+    [wizardId: string]: WizardControls;
+};
+
 export interface GameEventMap extends HTMLElementEventMap {
-    wizardClick: MouseEvent & { detail: WizardClickEventDetail };
-    wizardHit: MouseEvent & { detail: WizardHitEventDetail };
+    wizardClick: CustomEvent & { detail: WizardClickEventDetail };
+    wizardHit: CustomEvent & { detail: WizardHitEventDetail };
+    wizardControls: CustomEvent & { detail: WizardControlsEventDetail };
 }
 
 export class GameScene {
@@ -42,7 +53,6 @@ export class GameScene {
     handleMouseMove = (e: MouseEvent) => {
         const coords = getRelativeCoordinates(e, this.canvas!);
         this.updateMouseCoords(coords);
-        // console.log(`X: ${coords.x}, Y: ${coords.y}`);
     };
     handleClick = (e: MouseEvent) => {
         const coords = getRelativeCoordinates(e, this.canvas!);
@@ -82,6 +92,38 @@ export class GameScene {
 
         wizard.setProjectileColor(e.detail.color);
     };
+    handleWizardControlChange = (e: AppEventMap["wizardControlChange"]) => {
+        const wizard = this.getWizardById(e.detail.wizardId);
+        if (!wizard) return;
+
+        const { speed, shootingSpeed, projectileLimit, projectileBounce } = e.detail.controls;
+
+        wizard
+            .setSpeed(speed)
+            .setShootingSpeed(shootingSpeed)
+            .setProjectileLimit(projectileLimit)
+            .setProjectileBounce(projectileBounce);
+    };
+
+    dispatchWizardControls() {
+        const wizardControlsEntries = this.wizards.map((wizard) => [
+            wizard.id,
+            {
+                shootingSpeed: wizard.shootingSpeed,
+                projectileLimit: wizard.projectileLimit,
+                projectileBounce: wizard.projectileBounce,
+                speed: wizard.speed,
+            },
+        ]);
+
+        const wizardControlsEvent = new CustomEvent<WizardControlsEventDetail>("wizardControls", {
+            bubbles: true,
+            cancelable: false,
+            composed: true,
+            detail: Object.fromEntries(wizardControlsEntries),
+        });
+        dispatchEvent(wizardControlsEvent);
+    }
 
     getWizardById(id: string | null) {
         return this.wizards.find((wizard) => wizard.id === id) ?? null;
@@ -101,6 +143,18 @@ export class GameScene {
         this.canvas = canvas;
         this.create();
     };
+
+    addEventListener<K extends keyof AppEventMap>(
+        type: K,
+        listener: (event: AppEventMap[K]) => void
+    ) {
+        const wrappedListener = listener.bind(this);
+        window.addEventListener(type, wrappedListener as EventListener);
+
+        this.toDispose.push(() => {
+            window.removeEventListener(type, wrappedListener as EventListener);
+        });
+    }
 
     create() {
         const pinkWizard = new Wizard({
@@ -129,24 +183,11 @@ export class GameScene {
         this.wizards.push(pinkWizard);
         this.wizards.push(cyanWizard);
 
-        window.addEventListener("mousemove", this.handleMouseMove);
-        window.addEventListener("click", this.handleClick);
-        window.addEventListener<any>("wizardActivation", this.handleWizardActivation);
-        window.addEventListener<any>(
-            "wizardProjectileColor",
-            this.handleWizardProjectileColorChange
-        );
-
-        const dispose = () => window.removeEventListener("mousemove", this.handleMouseMove);
-        const dispose2 = () => window.removeEventListener("click", this.handleClick);
-        const dispose3 = () =>
-            window.removeEventListener<any>("wizardActivation", this.handleWizardActivation);
-        const dispose4 = () =>
-            window.removeEventListener<any>(
-                "wizardProjectileColor",
-                this.handleWizardProjectileColorChange
-            );
-        this.toDispose.push(dispose, dispose2, dispose3, dispose4);
+        this.addEventListener("mousemove", this.handleMouseMove);
+        this.addEventListener("click", this.handleClick);
+        this.addEventListener("wizardActivation", this.handleWizardActivation);
+        this.addEventListener("wizardProjectileColor", this.handleWizardProjectileColorChange);
+        this.addEventListener("wizardControlChange", this.handleWizardControlChange);
     }
 
     preUpdate = (ctx: CanvasRenderingContext2D) => {
@@ -166,10 +207,10 @@ export class GameScene {
 
             wizard.draw(ctx, time, delta, canvasSize);
         });
+        this.dispatchWizardControls();
     };
 
     dispose = () => {
-        console.log("disposing", this.toDispose.length);
         this.toDispose.forEach((dispose) => dispose());
         this.toDispose = [];
     };

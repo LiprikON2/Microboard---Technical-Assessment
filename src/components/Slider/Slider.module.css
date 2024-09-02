@@ -1,0 +1,8 @@
+.root {
+    display: flex;
+    flex-direction: column;
+}
+
+.label {
+    padding-inline: 0.15rem;
+}

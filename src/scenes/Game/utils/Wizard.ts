@@ -10,10 +10,10 @@ export type WizardOptions = Omit<CircleOptions, "bounce"> & {
     /** The limit of the maximum amount of projectiles spawned by this wizard */
     projectileLimit?: number;
     projectileColor?: string;
+    projectileBounce?: boolean;
 };
 
 export class Wizard extends Circle {
-    private shootingIntervalId: NodeJS.Timeout | null = null;
     private projectiles: ProjectileBuffer<Circle>;
     private lastShotTime: number = -Infinity;
 
@@ -21,6 +21,7 @@ export class Wizard extends Circle {
     shootingDirection: number;
     projectileSpeed: number;
     projectileColor: string;
+    projectileBounce: boolean;
     enemies: Wizard[] = [];
 
     constructor(options: WizardOptions) {
@@ -30,20 +31,37 @@ export class Wizard extends Circle {
             shootingSpeed = 10,
             shootingDirection = 0,
             projectileSpeed = 40,
-            // TODO make an option
             projectileLimit = 50,
             projectileColor = "red",
+            projectileBounce = false,
         } = options;
 
         this.shootingSpeed = shootingSpeed;
         this.shootingDirection = shootingDirection;
         this.projectileSpeed = projectileSpeed;
         this.projectileColor = projectileColor;
+        this.projectileBounce = projectileBounce;
         this.projectiles = new ProjectileBuffer(projectileLimit);
     }
 
     setProjectileColor(projectileColor: string) {
         this.projectileColor = projectileColor;
+        return this;
+    }
+
+    setProjectileBounce(projectileBounce: boolean) {
+        this.projectileBounce = projectileBounce;
+        return this;
+    }
+    setShootingSpeed(shootingSpeed: number) {
+        this.shootingSpeed = shootingSpeed;
+        return this;
+    }
+    get projectileLimit() {
+        return this.projectiles.bufferLength;
+    }
+    setProjectileLimit(projectileLimit: number) {
+        this.projectiles.setBufferLength(projectileLimit);
         return this;
     }
 
@@ -60,8 +78,7 @@ export class Wizard extends Circle {
             speed: this.projectileSpeed,
             color: this.projectileColor,
             radius: this.radius * 0.2,
-            // TODO make an option
-            bounce: false,
+            bounce: this.projectileBounce,
         });
         this.projectiles.push(projectile);
     }

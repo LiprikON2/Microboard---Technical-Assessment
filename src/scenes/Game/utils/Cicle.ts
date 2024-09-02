@@ -79,6 +79,11 @@ export class Circle {
         return this;
     }
 
+    setSpeed(speed: number) {
+        this.speed = speed;
+        return this;
+    }
+
     /**
      *
      * @param ctx Canvas context

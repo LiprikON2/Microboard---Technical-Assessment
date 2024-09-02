@@ -1,19 +1,20 @@
 import { randomId } from "~/utils";
-import classes from "./Radio.module.css";
+import classes from "./Checkbox.module.css";
 
-type RadioProps = {
-    checked: boolean;
+interface CheckboxProps {
     name: string;
-    onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-};
+    onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    checked?: boolean;
+}
 
-export const Radio = ({ checked, name, onChange = () => {}, ...rest }: RadioProps) => {
+export const Checkbox = ({ name, checked, onChange = () => {}, ...rest }: CheckboxProps) => {
     const id = randomId();
+
     return (
         <div className={classes.root}>
             <input
                 checked={checked}
-                type="radio"
+                type="checkbox"
                 id={id}
                 name={name}
                 onChange={onChange}

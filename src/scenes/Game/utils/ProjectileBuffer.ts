@@ -10,19 +10,26 @@ export class ProjectileBuffer<T> {
     /**
      * Max buffer length
      */
-    private bufferLength: number;
+    private _bufferLength: number;
 
     constructor(bufferLength = 10) {
-        this.bufferLength = bufferLength;
+        this._bufferLength = bufferLength;
+    }
+
+    get bufferLength() {
+        return this._bufferLength;
+    }
+    setBufferLength(value: number) {
+        this._bufferLength = value;
     }
 
     push(element: T) {
-        if (this.buffer.length === this.bufferLength) {
+        if (this.buffer.length === this._bufferLength) {
             this.buffer[this.pointer] = element;
         } else {
             this.buffer.push(element);
         }
-        this.pointer = (this.pointer + 1) % this.bufferLength;
+        this.pointer = (this.pointer + 1) % this._bufferLength;
     }
 
     get(i: number) {
@@ -38,6 +45,6 @@ export class ProjectileBuffer<T> {
 
     // Gets the i-th element before last one
     getLast(i: number) {
-        return this.buffer[this.pointer + this.bufferLength - 1 - i];
+        return this.buffer[this.pointer + this._bufferLength - 1 - i];
     }
 }
