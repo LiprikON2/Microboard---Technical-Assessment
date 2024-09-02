@@ -152,6 +152,8 @@ export class GameScene {
     }
 
     init = (canvas: HTMLCanvasElement) => {
+        if (this.canvas) return;
+
         this.canvas = canvas;
         this.create();
     };
@@ -236,7 +238,12 @@ export class GameScene {
 
     dispose = () => {
         this.toDispose.forEach((dispose) => dispose());
+
         this.toDispose = [];
+        this.wizards = [];
+        this.canvas = null;
+        this._projectileColors = null;
+        this.mouseCoords = { x: 0, y: 0 };
     };
 
     get canvasSize() {

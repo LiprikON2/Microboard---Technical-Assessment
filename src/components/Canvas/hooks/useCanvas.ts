@@ -3,7 +3,6 @@ import { useRef, useEffect } from "react";
 import { useViewportSize } from "~/hooks";
 
 export interface CanvasOptions {
-    stop?: boolean;
     preUpdate?: UpdateFn;
     postUpdate?: UpdateFn;
     dispose?: () => void;
@@ -62,7 +61,6 @@ export const useCanvas = (init: InitFn, update: UpdateFn, options: CanvasOptions
             const canvasSize = { height: canvas!.height / ratio, width: canvas!.width / ratio };
 
             frameCount++;
-            if (options.stop) return options.dispose?.();
 
             if (!Number.isNaN(delta)) {
                 options.preUpdate?.(context, time, delta, canvasSize);
@@ -71,9 +69,10 @@ export const useCanvas = (init: InitFn, update: UpdateFn, options: CanvasOptions
             }
             animationFrameId = window.requestAnimationFrame(render);
         };
-        window.requestAnimationFrame(render);
+        const startAnimationFrameId = window.requestAnimationFrame(render);
 
         return () => {
+            window.cancelAnimationFrame(startAnimationFrameId);
             window.cancelAnimationFrame(animationFrameId);
             options.dispose?.();
         };

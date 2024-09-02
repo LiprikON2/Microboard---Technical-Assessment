@@ -1,7 +1,6 @@
-import { memo, useState } from "react";
+import { memo } from "react";
 
 import { Canvas } from "~/components";
-import { randomId } from "~/utils";
 import { GameScene } from "./utils";
 
 export const Game = memo(() => {
