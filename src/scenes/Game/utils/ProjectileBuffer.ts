@@ -19,9 +19,6 @@ export class ProjectileBuffer<T> {
     get bufferLength() {
         return this._bufferLength;
     }
-    setBufferLength(value: number) {
-        this._bufferLength = value;
-    }
 
     push(element: T) {
         if (this.buffer.length === this._bufferLength) {

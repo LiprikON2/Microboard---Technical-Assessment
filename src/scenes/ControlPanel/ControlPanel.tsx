@@ -78,7 +78,7 @@ export const ControlPanel = ({ onReset = () => {} }: ControlPanelProps) => {
                         <Slider
                             name="Projectile Limit"
                             min={1}
-                            max={500}
+                            max={200}
                             value={controls.projectileLimit}
                             onChange={(e) =>
                                 handleWizardControlChange(

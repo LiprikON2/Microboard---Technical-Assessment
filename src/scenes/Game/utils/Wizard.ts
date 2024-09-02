@@ -61,7 +61,7 @@ export class Wizard extends Circle {
         return this.projectiles.bufferLength;
     }
     setProjectileLimit(projectileLimit: number) {
-        this.projectiles.setBufferLength(projectileLimit);
+        this.projectiles = new ProjectileBuffer(projectileLimit);
         return this;
     }
 
@@ -91,6 +91,7 @@ export class Wizard extends Circle {
             this.shoot();
             this.lastShotTime = time;
         }
+        // console.log("length", this.projectiles.buffer.length);
     }
 
     draw(

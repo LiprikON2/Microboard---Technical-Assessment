@@ -2,6 +2,8 @@
 
 ![](https://i.imgur.com/tOZV1dc.png)
 
+Демо - [https://microboard-task.netlify.app/](https://microboard-task.netlify.app/)
+
 ## Реализуйте игру "Дуэль"
 
 - [x] Есть прямоугольное поле Canvas, на прямоугольном поле расположены фигуры — два круга. Круги представляют собой героев, которые сражаются друг с другом. 
