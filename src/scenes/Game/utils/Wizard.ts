@@ -1,7 +1,7 @@
-import { Circle, CircleOptions } from "./Cicle";
+import { Circle, CircleOptions } from "./Circle";
 import { WizardHitEventDetail } from "./GameScene";
 import { ProjectileBuffer } from "./ProjectileBuffer";
-import { isPointInCircle } from "./helpers";
+import { isPointInEllipse } from "./helpers";
 
 export type WizardOptions = Omit<CircleOptions, "bounce"> & {
     shootingSpeed?: number;
@@ -101,10 +101,17 @@ export class Wizard extends Circle {
     ) {
         this.projectiles.forEach((projectile) => {
             this.enemies.forEach((enemy) => {
+                const aspectRatio = canvasSize.width / canvasSize.height;
+
                 if (
-                    isPointInCircle(
+                    isPointInEllipse(
                         { x: projectile.x, y: projectile.y },
-                        { x: enemy.x, y: enemy.y, r: enemy.radius }
+                        {
+                            x: enemy.x,
+                            y: enemy.y,
+                            width: (enemy.radius * 2) / aspectRatio,
+                            height: enemy.radius * 2,
+                        }
                     )
                 ) {
                     if (!projectile.active) return;

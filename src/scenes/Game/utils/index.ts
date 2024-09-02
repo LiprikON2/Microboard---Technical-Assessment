@@ -1,4 +1,4 @@
-export * from "./Cicle";
+export * from "./Circle";
 export * from "./GameScene";
 export * from "./helpers";
 export * from "./ProjectileBuffer";

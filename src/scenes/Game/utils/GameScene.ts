@@ -1,6 +1,6 @@
 import { AppEventMap } from "~/App";
 import { Wizard } from "./Wizard";
-import { getRelativeCoordinates, isPointInCircle } from "./helpers";
+import { getRelativeCoordinates, isPointInEllipse } from "./helpers";
 
 export interface WizardClickEventDetail {
     wizardId: string;
@@ -131,7 +131,19 @@ export class GameScene {
 
     getClickedWizard() {
         for (const wizard of this.wizards) {
-            if (isPointInCircle(this.mouseCoords, { x: wizard.x, y: wizard.y, r: wizard.radius })) {
+            const aspectRatio = this.canvasSize.width / this.canvasSize.height;
+
+            if (
+                isPointInEllipse(
+                    { x: this.mouseCoords.x, y: this.mouseCoords.y },
+                    {
+                        x: wizard.x,
+                        y: wizard.y,
+                        width: (wizard.radius * 2) / aspectRatio,
+                        height: wizard.radius * 2,
+                    }
+                )
+            ) {
                 return wizard;
             }
         }
@@ -201,7 +213,19 @@ export class GameScene {
         canvasSize: { width: number; height: number }
     ) => {
         this.wizards.forEach((wizard) => {
-            if (isPointInCircle(this.mouseCoords, { x: wizard.x, y: wizard.y, r: wizard.radius })) {
+            const aspectRatio = canvasSize.width / canvasSize.height;
+
+            if (
+                isPointInEllipse(
+                    { x: this.mouseCoords.x, y: this.mouseCoords.y },
+                    {
+                        x: wizard.x,
+                        y: wizard.y,
+                        width: (wizard.radius * 2) / aspectRatio,
+                        height: wizard.radius * 2,
+                    }
+                )
+            ) {
                 wizard.setDirection(-wizard.direction);
             }
 
@@ -215,18 +239,21 @@ export class GameScene {
         this.toDispose = [];
     };
 
-    updateMouseCoords(mousePixelCoords: { x: number; y: number }) {
+    get canvasSize() {
         const { devicePixelRatio: ratio = 1 } = window;
         const canvasSize = {
             height: this.canvas!.height / ratio,
             width: this.canvas!.width / ratio,
         };
 
-        const mouseCoords = {
-            x: (mousePixelCoords.x / canvasSize.width) * 100,
-            y: (mousePixelCoords.y / canvasSize.height) * 100,
-        };
+        return canvasSize;
+    }
 
+    updateMouseCoords(mousePixelCoords: { x: number; y: number }) {
+        const mouseCoords = {
+            x: (mousePixelCoords.x / this.canvasSize.width) * 100,
+            y: (mousePixelCoords.y / this.canvasSize.height) * 100,
+        };
         this.mouseCoords = mouseCoords;
     }
 }

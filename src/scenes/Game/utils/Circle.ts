@@ -73,6 +73,10 @@ export class Circle {
         this.active = active;
         return this;
     }
+    setColor(color: string) {
+        this.color = color;
+        return this;
+    }
 
     setDirection(direction: number) {
         this.direction = direction;
@@ -107,7 +111,7 @@ export class Circle {
         ctx.arc(
             canvasSize.width * this.x * 0.01,
             canvasSize.height * this.y * 0.01,
-            this.radius * canvasSize.height * canvasSize.width * 0.000008,
+            this.radius * canvasSize.height * 0.01,
             0,
             2 * Math.PI
         );

@@ -1,13 +1,9 @@
 import { useState } from "react";
-import classes from "./WizardTooltip.module.css";
+
+import { WizardActivationEventDetail, WizardProjectileColorEventDetail } from "~/App";
 import { Radio, Tooltip } from "~/components";
 import { useWindowEvent } from "~/hooks";
 import { GameEventMap } from "../Game/utils";
-import { WizardActivationEventDetail, WizardProjectileColorEventDetail } from "~/App";
-
-// interface WizardTooltipProps {
-//     //
-// }
 
 export const WizardTooltip = () => {
     const [wizardTooltip, setWizardTooltip] = useState<{
