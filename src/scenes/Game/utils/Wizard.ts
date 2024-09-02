@@ -1,4 +1,5 @@
 import { Circle, CircleOptions } from "./Cicle";
+import { WizardHitEventDetail } from "./GameScene";
 import { ProjectileBuffer } from "./ProjectileBuffer";
 import { isPointInCircle } from "./helpers";
 
@@ -89,7 +90,18 @@ export class Wizard extends Circle {
                         { x: enemy.x, y: enemy.y, r: enemy.radius }
                     )
                 ) {
-                    projectile.setVisible(false);
+                    if (!projectile.active) return;
+                    projectile.setVisible(false).setActive(false);
+                    const wizardHitEvent = new CustomEvent<WizardHitEventDetail>("wizardHit", {
+                        bubbles: true,
+                        cancelable: false,
+                        composed: true,
+                        detail: {
+                            assaliantId: this.id,
+                            victimId: enemy.id,
+                        },
+                    });
+                    dispatchEvent(wizardHitEvent);
                 }
             });
 

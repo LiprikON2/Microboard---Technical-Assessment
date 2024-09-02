@@ -2,13 +2,19 @@ import { AppEventMap } from "~/App";
 import { Wizard } from "./Wizard";
 import { getRelativeCoordinates, isPointInCircle } from "./helpers";
 
-interface WizardClickEventDetail {
+export interface WizardClickEventDetail {
     wizardId: string;
     coords: { x: number; y: number };
     content: { color: string; active: boolean }[];
 }
+export interface WizardHitEventDetail {
+    assaliantId: string;
+    victimId: string;
+}
+
 export interface GameEventMap extends HTMLElementEventMap {
     wizardClick: MouseEvent & { detail: WizardClickEventDetail };
+    wizardHit: MouseEvent & { detail: WizardHitEventDetail };
 }
 
 export class GameScene {
@@ -98,6 +104,7 @@ export class GameScene {
 
     create() {
         const pinkWizard = new Wizard({
+            id: "Pink Wizard",
             x: 10,
             y: 10,
             speed: 25,
@@ -106,6 +113,7 @@ export class GameScene {
             shootingDirection: 0,
         });
         const cyanWizard = new Wizard({
+            id: "Cyan Wizard",
             x: 90,
             y: 40,
             speed: 20,

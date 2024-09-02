@@ -2,6 +2,7 @@ import { dir } from "console";
 import { clamp, randomId } from "~/utils";
 
 export interface CircleOptions {
+    id?: string;
     /** Initial horizontal position of the center of the circle in percentage of the canvas width */
     x?: number;
     /** Initial vertical position of the center of the circle in percentage of the canvas height */
@@ -41,6 +42,7 @@ export class Circle {
         bounce = false,
         visible = true,
         active = true,
+        id = randomId(),
     }: CircleOptions) {
         this.x = x;
         this.y = y;
@@ -51,8 +53,7 @@ export class Circle {
         this.bounce = bounce;
         this.visible = visible;
         this.active = active;
-
-        this.id = randomId();
+        this.id = id;
     }
 
     get speedX() {

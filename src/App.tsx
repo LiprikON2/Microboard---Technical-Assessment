@@ -1,5 +1,8 @@
-import { Game, WizardTooltip } from "./scenes";
+import { useState } from "react";
+
 import "./App.css";
+import { randomId } from "./utils";
+import { Game, WizardScoreboard, WizardTooltip } from "./scenes";
 
 export interface WizardActivationEventDetail {
     wizardId: string | null;
@@ -16,9 +19,19 @@ export interface AppEventMap extends HTMLElementEventMap {
 }
 
 const App = () => {
+    const [gameKey, setGameKey] = useState(randomId());
+    const [scoreboardKey, setScoreboardKey] = useState(randomId());
+
+    const resetGame = () => {
+        setGameKey(randomId());
+        setScoreboardKey(randomId());
+    };
+
     return (
         <>
-            <Game />
+            <WizardScoreboard key={scoreboardKey} />
+            <Game key={gameKey} />
+            <button onClick={resetGame}>Reset</button>
             <WizardTooltip />
         </>
     );

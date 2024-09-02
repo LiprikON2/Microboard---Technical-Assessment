@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import classes from "./WizardTooltip.module.css";
 import { Radio, Tooltip } from "~/components";
 import { useWindowEvent } from "~/hooks";
-import { GameEventMap } from "../../utils";
+import { GameEventMap } from "../Game/utils";
 import { WizardActivationEventDetail, WizardProjectileColorEventDetail } from "~/App";
 
 // interface WizardTooltipProps {
