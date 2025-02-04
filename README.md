@@ -1,4 +1,4 @@
-# Тестовое задание для Microboard - "Дуэль"
+# Тестовое задание от Microboard - "Дуэль"
 
 [![wakatime](https://wakatime.com/badge/user/08f508bd-d42c-46d7-909f-c80e7f16dc92/project/27d2bae9-eb49-4a53-b25e-13a3526c17c5.svg)](https://wakatime.com/badge/user/08f508bd-d42c-46d7-909f-c80e7f16dc92/project/27d2bae9-eb49-4a53-b25e-13a3526c17c5)
 
